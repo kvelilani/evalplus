@@ -50,6 +50,12 @@ def input_generation(args, problems):
                     code=problem["canonical_solution"],
                     contract=problem["contract"],
                 )
+            elif args.dataset == "custom":
+                c_code = (
+                    problem["prompt"]
+                    + problem["contract"]
+                    + problem["canonical_solution"]
+                )
 
             # first generate chatgpt
             input_gen = ChatGPTGen(
@@ -79,7 +85,7 @@ def input_generation(args, problems):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--dataset", required=True, type=str, choices=["humaneval", "mbpp"]
+        "--dataset", required=True, type=str, choices=["humaneval", "mbpp", "custom"]
     )
     parser.add_argument("--chatgpt_len", required=True, type=int)
     parser.add_argument("--mut_len", required=True, type=int)
@@ -90,7 +96,7 @@ def main():
     if args.dataset == "humaneval":
         from evalplus.data import get_human_eval_plus
 
-        # Allow it to be incomplete
+        # Allow it to be incompletex
         problems = get_human_eval_plus(err_incomplete=False)
         args.output = args.output or "HumanEvalPlusInputs.jsonl"
 
@@ -99,6 +105,12 @@ def main():
 
         problems = get_mbpp_plus(err_incomplete=False)
         args.output = args.output or "MbppPlusInput.jsonl"
+    
+    if args.dataset == "custom":
+        from evalplus.data import get_custom_dataset
+
+        problems = get_custom_dataset(path = "/home/ubuntu/evalplus/evalplus/customdata.jsonl")
+        args.output = args.output or "custominput.jsonl"
 
     assert os.path.isfile(args.output), f"{args.output} already exists!"
     input_generation(args, problems)

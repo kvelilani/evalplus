@@ -53,6 +53,10 @@ def code_generate(args, workdir: PathLike, model: DecoderBase, id_range=None):
             from evalplus.data import get_mbpp_plus
 
             dataset = get_mbpp_plus()
+        elif args.dataset == "custom":
+            from evalplus.data import get_custom_dataset
+
+            dataset = get_custom_dataset()
 
         for task_id, task in p.track(dataset.items()):
             if id_range is not None:
@@ -115,7 +119,7 @@ def main():
     parser.add_argument("--bs", default=1, type=int)
     parser.add_argument("--temperature", default=0.0, type=float)
     parser.add_argument(
-        "--dataset", required=True, type=str, choices=["humaneval", "mbpp"]
+        "--dataset", required=True, type=str, choices=["humaneval", "mbpp","custom"]
     )
     parser.add_argument("--root", type=str, required=True)
     parser.add_argument("--n_samples", default=1, type=int)

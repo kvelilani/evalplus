@@ -20,6 +20,8 @@ from evalplus.data import (
     get_human_eval_plus_hash,
     get_mbpp_plus,
     get_mbpp_plus_hash,
+    get_custom_dataset,
+    get_custom_dataset_hash,
     load_solutions,
 )
 from evalplus.data.mbpp import mbpp_serialize_inputs
@@ -159,6 +161,11 @@ def evaluate(flags):
                 dataset_hash,
                 MBPP_OUTPUT_NOT_NONE_TASKS,
             )
+        elif flags.dataset == "custom":
+            problems = get_custom_dataset(mini=flags.mini, noextreme=flags.noextreme)
+            dataset_hash = get_custom_dataset_hash(path=""
+            )
+            expected_output = get_groundtruth(problems, dataset_hash, [])
 
         results = {
             "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -327,7 +334,7 @@ def evaluate(flags):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--dataset", required=True, type=str, choices=["humaneval", "mbpp"]
+        "--dataset", required=True, type=str, choices=["humaneval", "mbpp","custom"]
     )
     parser.add_argument("--samples", required=True, type=str)
     parser.add_argument("--base-only", action="store_true")
